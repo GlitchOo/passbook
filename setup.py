@@ -18,6 +18,9 @@ setup(
     install_requires=[
         'cryptography==3.3.1',
     ],
+    extras_require={
+        ':python_version>="3.10"': ['swig'],
+    },
 
     classifiers=[
         'Development Status :: 3 - Alpha',
