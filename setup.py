@@ -1,22 +1,21 @@
 from setuptools import setup
 
-version = __import__('passbook').__version__
+version = __import__('py-pkpass').__version__
 
 setup(
-    name='Passbook',
+    name='PY-PkPass',
     version=version,
-    author='Fernando Aramendi',
-    author_email='fernando@devartis.com',
-    packages=['passbook', 'passbook.test'],
-    url='http://github.com/devartis/passbook/',
+    author='GlitchOo',
+    packages=['py-pkpass'],
+    url='https://github.com/GlitchOo/py-pkpass/',
     license=open('LICENSE.txt').read(),
-    description='Passbook file generator',
+    description='Pkpass file generator',
     long_description=open('README.md').read(),
 
-    download_url='http://pypi.python.org/packages/source/P/Passbook/Passbook-%s.tar.gz' % version,
+    download_url='http://pypi.python.org/packages/source/P/PY-PkPass/PY-PkPass-%s.tar.gz' % version,
 
     install_requires=[
-        'cryptography==3.3.1',
+        'cryptography>=44.0.1',
     ],
     extras_require={
         ':python_version>="3.10"': ['swig'],
