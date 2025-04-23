@@ -124,7 +124,7 @@ def test_files():
 
     manifest_json = passfile._createManifest(passfile._createPassJson())
     manifest = json.loads(manifest_json)
-    assert '170eed23019542b0a2890a0bf753effea0db181a' == manifest['icon.png']
+    assert '42c60af752c513988fd9965da739c027721ae801f89201643d4fd8e5644fff03' == manifest['icon.png']
 
     passfile.addFile('logo.png', open(cwd / 'static/white_square.png', 'rb'))
     assert len(passfile._files) == 2
@@ -132,7 +132,7 @@ def test_files():
 
     manifest_json = passfile._createManifest(passfile._createPassJson())
     manifest = json.loads(manifest_json)
-    assert '170eed23019542b0a2890a0bf753effea0db181a' == manifest['logo.png']
+    assert '42c60af752c513988fd9965da739c027721ae801f89201643d4fd8e5644fff03' == manifest['logo.png']
 
 
 # def test_signing():

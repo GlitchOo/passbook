@@ -53,9 +53,9 @@ def test_create_manifest_and_signature_format():
     assert 'pass.json' in manifest
     assert 'icon.png' in manifest
     
-    # Each hash should be a 40-character SHA-1 hash
+    # Each hash should be a 64-character SHA-256 hash
     for file_hash in manifest.values():
-        assert len(file_hash) == 40
+        assert len(file_hash) == 64
         # Try to verify it's a valid hex string
         int(file_hash, 16)
 
