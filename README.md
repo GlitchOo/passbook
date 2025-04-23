@@ -1,15 +1,14 @@
-# FORK: Use Cryptography instead of M2Crypto
-This fork is updated to use the cryptography library for easy install on windows. In addition, m2crypto seems to be unmaintained.
+# Passbook
+
+![Build Status](https://github.com/GlitchOo/passbook/actions/workflows/ci.yml/badge.svg)
+
+This fork is updated to use the latest version of the cryptography library, includes the NFC method, and additional tests for Python v3.8-3.12.
 
 ## Installing this fork
 You can install this fork like this:
 ```
-pip install git+https://github.com/shivaRamdeen/passbook.git
+pip install git+https://github.com/GlitchOo/passbook.git
 ```
-
-# Passbook
-
-[![Build Status](https://travis-ci.org/devartis/passbook.svg?branch=master)](https://travis-ci.org/devartis/passbook)
 
 Python library to create Apple Wallet (.pkpass) files (Apple Wallet 
 has previously been known as Passbook in iOS 6 to iOS 8).
@@ -83,14 +82,7 @@ It can be exported from KeyChain into a .pem (e.g. wwdr.pem).
 
 ## Testing
 
-You can run the tests with `py.test` or optionally with coverage support 
-(install `pytest-cov` first): 
-
-    py.test --cov
-    
-You can also generate a HTML report of the coverage:
-
-    py.test --cov-report html
+You can run the tests with `python -m pytest -v`
 
 You can run the tests against multiple versions of Python by running `tox` 
 which you need to install first.
