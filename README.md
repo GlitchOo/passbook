@@ -77,7 +77,7 @@ passfile.create('certificate.pem', 'private.key', 'wwdr.pem', password , 'test.p
 
 ## Note: Getting WWDR Certificate
 
-Certificate is available @ http://developer.apple.com/certificationauthority/AppleWWDRCA.cer
+Apple WWDR Certificate is available @ https://www.apple.com/certificateauthority/
 
 It can be exported from KeyChain into a .pem (e.g. wwdr.pem).
 
