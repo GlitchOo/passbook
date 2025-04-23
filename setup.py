@@ -3,7 +3,7 @@ from setuptools import setup
 version = __import__('py_pkpass').__version__
 
 setup(
-    name='PY-PkPass',
+    name='py_pkpass',
     version=version,
     author='GlitchOo',
     packages=['py_pkpass'],
@@ -13,7 +13,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
 
-    download_url='http://pypi.python.org/packages/source/P/PY-PkPass/PY-PkPass-%s.tar.gz' % version,
+    download_url='https://github.com/GlitchOo/py-pkpass/archive/refs/tags/v%s.tar.gz' % version,
 
     install_requires=[
         'cryptography>=44.0.1',
