@@ -1,3 +1,0 @@
-path.py
-pytest
-tox-travis
