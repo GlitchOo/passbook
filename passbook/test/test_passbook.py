@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 
 import pytest
 from path import Path
@@ -12,6 +13,11 @@ wwdr_certificate = cwd / 'certificates' / 'wwdr_certificate.pem'
 certificate = cwd / 'certificates' / 'certificate.pem'
 key = cwd / 'certificates' / 'private.key'
 password_file = cwd / 'certificates' / 'password.txt'
+
+# Check if certificate files exist
+CERTS_AVAILABLE = (os.path.exists(certificate) and 
+                   os.path.exists(key) and 
+                   os.path.exists(wwdr_certificate))
 
 
 def create_shell_pass(barcodeFormat=BarcodeFormat.CODE128):
@@ -179,6 +185,10 @@ def test_files():
     #     smime.verify(signature, data_bio, flags=SMIME.PKCS7_NOVERIFY)
 
 
+@pytest.mark.skipif(not CERTS_AVAILABLE,
+                    reason="Certificate files missing")
+@pytest.mark.skipif(not os.path.exists(cwd / 'static/white_square.png'),
+                     reason="Test image file missing")
 def test_passbook_creation():
     """
     This test can only run locally if you provide your personal Apple Wallet
