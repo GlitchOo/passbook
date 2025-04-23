@@ -1,6 +1,6 @@
-# Passbook
+# Py-Pkpass
 
-![Build Status](https://github.com/GlitchOo/passbook/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/GlitchOo/py-pkpass/actions/workflows/ci.yml/badge.svg)
 
 This fork is updated to use the latest version of the cryptography library, includes the NFC method, and additional tests for Python v3.8-3.12.
 
@@ -8,7 +8,7 @@ This fork is updated to use the latest version of the cryptography library, incl
 
 You can install this fork directly from GitHub:
 ```
-pip install git+https://github.com/GlitchOo/passbook.git
+pip install git+https://github.com/GlitchOo/py-pkpass.git
 ```
 
 This Python library helps you create Apple Wallet (.pkpass) files (Apple Wallet was previously known as Passbook in iOS 6 to iOS 8).
