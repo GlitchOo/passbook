@@ -16,3 +16,5 @@ v1.0.1, 08/05/2015 -- Added new field values and validations
 v1.0.2, 07/25/2016 -- Add compatibility with iOS 9 (thanks @mbaechtold)
 
 v1.0.3, 12/14/2020 -- Switch crypto library from m2crypto to cryptography
+
+v1.0.4, 04/23/2025 -- Updated cryptography to latyest version and switched to a new package
