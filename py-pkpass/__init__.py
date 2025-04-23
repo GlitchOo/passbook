@@ -1,6 +1,1 @@
-VERSION = ('1', '0', '4')
-
-def get_version(*args, **kwargs):
-    return '.'.join(VERSION)
-
-__version__ = get_version()
+__version__ = '1.0.0'
