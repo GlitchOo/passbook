@@ -396,16 +396,45 @@ class Pass(object):
         The manifest is the file
         containing a list of files included in the pass file (and their hashes).
         """
-        cert = x509.load_pem_x509_certificate(self._readFileBytes(certificate))
-        priv_key = serialization.load_pem_private_key(self._readFileBytes(key), password=password.encode('UTF-8'))
-        wwdr_cert = x509.load_pem_x509_certificate(self._readFileBytes(wwdr_certificate))
-        
-        options = [pkcs7.PKCS7Options.DetachedSignature]
-        return pkcs7.PKCS7SignatureBuilder()\
-                .set_data(manifest.encode('UTF-8'))\
-                .add_signer(cert, priv_key, hashes.SHA256())\
-                .add_certificate(wwdr_cert)\
-                .sign(serialization.Encoding.DER, options)
+        try:
+            # Read certificate files in binary mode
+            cert_data = self._readFileBytes(certificate)
+            key_data = self._readFileBytes(key)
+            wwdr_data = self._readFileBytes(wwdr_certificate)
+            
+            # Load the certificates and private key with proper error handling
+            try:
+                cert = x509.load_pem_x509_certificate(cert_data)
+            except Exception as e:
+                raise ValueError(f"Failed to load certificate: {str(e)}. Make sure it's a valid PEM-formatted certificate.")
+            
+            try:
+                priv_key = serialization.load_pem_private_key(
+                    key_data, 
+                    password=password.encode('UTF-8') if password else None
+                )
+            except Exception as e:
+                raise ValueError(f"Failed to load private key: {str(e)}. Check that the password is correct and the key is in PEM format.")
+            
+            try:
+                wwdr_cert = x509.load_pem_x509_certificate(wwdr_data)
+            except Exception as e:
+                raise ValueError(f"Failed to load WWDR certificate: {str(e)}. Make sure it's a valid PEM-formatted certificate.")
+            
+            # Create and return the signature
+            options = [pkcs7.PKCS7Options.DetachedSignature]
+            return pkcs7.PKCS7SignatureBuilder()\
+                    .set_data(manifest.encode('UTF-8'))\
+                    .add_signer(cert, priv_key, hashes.SHA256())\
+                    .add_certificate(wwdr_cert)\
+                    .sign(serialization.Encoding.DER, options)
+        except Exception as e:
+            # Provide more detailed error information
+            error_msg = f"Error creating signature: {str(e)}"
+            if "MalformedFraming" in str(e):
+                error_msg += "\nOne of your PEM files appears to be malformed. Make sure all certificates and keys are in proper PEM format."
+                error_msg += "\nSee https://cryptography.io/en/latest/faq/#why-can-t-i-import-my-pem-file for more details."
+            raise Exception(error_msg)
 
     # Creates .pkpass (zip archive)
     def _createZip(self, pass_json, manifest, signature, zip_file=None):
