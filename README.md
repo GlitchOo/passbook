@@ -17,7 +17,6 @@ For more information about Apple Wallet, see the:
 - [Wallet Topic Page](https://developer.apple.com/wallet/)
 - [Wallet Developer Guide](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/PassKit_PG/index.html#//apple_ref/doc/uid/TP40012195)
 
-> If you need a server-side implementation (API/WebServices) in Django, check out [django-passbook](http://github.com/devartis/django-passbook).
 
 ## Getting Started
 
