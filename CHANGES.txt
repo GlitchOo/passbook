@@ -1,1 +1,3 @@
-v.1.0.0 - Forked from original passbook repo, updated package versions, added additional tests
+v1.0.0 - Forked from original passbook repo, updated package versions, added additional tests
+
+v1.0.1 - Added additional error messages, resolved issue with sha1, added additional readme info for latest openssl versions
