@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import patch, MagicMock, ANY
 from path import Path
 
-from py-pkpass.models import Barcode, BarcodeFormat, Pass, StoreCard
+from py_pkpass.models import Barcode, BarcodeFormat, Pass, StoreCard
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.serialization import pkcs7
@@ -59,9 +59,9 @@ def test_create_manifest_and_signature_format():
         # Try to verify it's a valid hex string
         int(file_hash, 16)
 
-@patch('py-pkpass.models.x509.load_pem_x509_certificate')
-@patch('py-pkpass.models.serialization.load_pem_private_key')
-@patch('py-pkpass.models.pkcs7.PKCS7SignatureBuilder')
+@patch('py_pkpass.models.x509.load_pem_x509_certificate')
+@patch('py_pkpass.models.serialization.load_pem_private_key')
+@patch('py_pkpass.models.pkcs7.PKCS7SignatureBuilder')
 def test_signature_crypto_method(mock_builder, mock_load_key, mock_load_cert):
     """Test signature creation using the cryptography library."""
     # Setup mocks

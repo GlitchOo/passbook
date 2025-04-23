@@ -1,12 +1,12 @@
 from setuptools import setup
 
-version = __import__('py-pkpass').__version__
+version = __import__('py_pkpass').__version__
 
 setup(
     name='PY-PkPass',
     version=version,
     author='GlitchOo',
-    packages=['py-pkpass'],
+    packages=['py_pkpass'],
     url='https://github.com/GlitchOo/py-pkpass/',
     license=open('LICENSE.txt').read(),
     description='Pkpass file generator',

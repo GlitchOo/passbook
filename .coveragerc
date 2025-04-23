@@ -1,5 +1,5 @@
 [run]
-source = py-pkpass
+source = py_pkpass
 branch = 1
 
 [report]
