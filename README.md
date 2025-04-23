@@ -30,7 +30,7 @@ For more information about Apple Wallet, see the:
 * Select your pass type ID → Configure (Follow steps and download the generated pass.cer file)
 * Use Keychain Access to export a Certificates.p12 file (you need the Apple Root Certificate installed)
 
-### 2) Generate the certificate and key files
+### 2) Generate the certificate and key files (Note: if you are using the latest version of openssl you will need to append -legacy to each command)
 
 ```shell
 # Export certificate from p12 file
