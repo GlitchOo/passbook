@@ -6,9 +6,13 @@ This fork is updated to use the latest version of the cryptography library, incl
 
 ## Installing this fork
 
-You can install this fork directly from GitHub:
+You can install this fork directly from GitHub or with pip:
 ```
 pip install git+https://github.com/GlitchOo/py-pkpass.git
+```
+
+```
+pip install py-pkpass
 ```
 
 This Python library helps you create Apple Wallet (.pkpass) files (Apple Wallet was previously known as Passbook in iOS 6 to iOS 8).
