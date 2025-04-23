@@ -11,6 +11,7 @@ setup(
     license=open('LICENSE.txt').read(),
     description='Pkpass file generator',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
 
     download_url='http://pypi.python.org/packages/source/P/PY-PkPass/PY-PkPass-%s.tar.gz' % version,
 
