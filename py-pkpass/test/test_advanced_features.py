@@ -3,7 +3,7 @@ import json
 import pytest
 from path import Path
 
-from passbook.models import (
+from py-pkpass.models import (
     Barcode, BarcodeFormat, Pass, StoreCard, 
     Location, IBeacon, DateField, NumberField, 
     DateStyle, NumberStyle, Alignment
@@ -19,7 +19,7 @@ def create_base_pass():
     passfile = Pass(
         card_info, 
         organizationName='Test Organization', 
-        passTypeIdentifier='pass.com.test.passbook', 
+        passTypeIdentifier='pass.com.test.pkpass', 
         teamIdentifier='AB12CD34EF'
     )
     passfile.barcode = barcode

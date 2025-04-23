@@ -3,7 +3,7 @@ import json
 import pytest
 from path import Path
 
-from passbook.models import (
+from py-pkpass.models import (
     Barcode, BarcodeFormat, Pass, StoreCard, 
     BoardingPass, Coupon, EventTicket, Generic,
     TransitType

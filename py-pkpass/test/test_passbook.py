@@ -5,7 +5,7 @@ import os
 import pytest
 from path import Path
 
-from passbook.models import Barcode, BarcodeFormat, CurrencyField, Pass, StoreCard
+from py-pkpass.models import Barcode, BarcodeFormat, CurrencyField, Pass, StoreCard
 
 cwd = Path(__file__).parent
 

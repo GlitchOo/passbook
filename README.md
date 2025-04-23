@@ -49,7 +49,7 @@ You can export it from Keychain Access into a .pem file (e.g., wwdr.pem).
 ```python
 #!/usr/bin/env python
 
-from passbook.models import Pass, Barcode, BarcodeFormat, StoreCard
+from py-pkpass.models import Pass, Barcode, BarcodeFormat, StoreCard
 
 # Create a store card pass type
 cardInfo = StoreCard()
