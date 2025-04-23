@@ -1,5 +1,5 @@
 [run]
-source = passbook
+source = py-pkpass
 branch = 1
 
 [report]
