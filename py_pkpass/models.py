@@ -7,7 +7,8 @@ from io import BytesIO
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.serialization import pkcs7
+from cryptography.hazmat.primitives.serialization import pkcs7, load_pem_private_key
+from cryptography.hazmat.primitives.asymmetric import padding
 
 
 class Alignment:
@@ -235,11 +236,7 @@ class StoreCard(PassInformation):
 class Pass(object):
 
     def __init__(self, passInformation, json='', passTypeIdentifier='',
-                 organizationName='', teamIdentifier='',
-                 nfc_message=None,
-                 encryption_public_key=None,
-                 sharingProhibited=None,
-                 requiresAuthentication=False):
+                 organizationName='', teamIdentifier=''):
 
         self._files = {}  # Holds the files to include in the .pkpass
         self._hashes = {}  # Holds the SHAs of the files array
@@ -269,7 +266,7 @@ class Pass(object):
         self.labelColor = None  # Optional. Color of the label text
         self.logoText = None  # Optional. Text displayed next to the logo
         self.barcode = None  # Optional. Information specific to barcodes.  This is deprecated and can only be set to original barcode formats.
-        self.barcodes = None #Optional.  All supported barcodes
+        self.barcodes = None  # Optional.  All supported barcodes
         # Optional. If true, the strip image is displayed
         self.suppressStripShine = False
 
@@ -300,29 +297,29 @@ class Pass(object):
         self.expirationDate = None
         self.voided = None
 
+        # NFC Support
+        self.nfc_message = None
+        self.encryption_public_key = None
+        self.requiresAuthentication = None
+
         self.passInformation = passInformation
 
-        # Create an NFC pass
-        self.nfc_message = nfc_message
-        #  Public encryption key
-        self.encryption_public_key = encryption_public_key
-
-        # This one prevents users from sharing passes with older iOS versions and bypassing the authentication requirement.
-        self.sharingProhibited = sharingProhibited
-
-        # It's a Boolean value that indicates whether the NFC pass requires authentication.
-        self.requiresAuthentication = requiresAuthentication
+        self.sharingProhibited = None  # Optional. If true, sharing is disabled
 
     # Adds file to the file array
     def addFile(self, name, fd):
         self._files[name] = fd.read()
+
+    def _readFileBytes(self, file_path):
+        """Helper to read file contents as bytes."""
+        with open(file_path, 'rb') as f:
+            return f.read()
 
     # Creates the actual .pkpass file
     def create(self, certificate, key, wwdr_certificate, password, zip_file=None):
         pass_json = self._createPassJson()
         manifest = self._createManifest(pass_json)
         signature = self._createSignatureCrypto(manifest, certificate, key, wwdr_certificate, password)
-        # signature = self._createSignature(manifest, certificate, key, wwdr_certificate, password)
         if not zip_file:
             zip_file = BytesIO()
         self._createZip(pass_json, manifest, signature, zip_file=zip_file)
@@ -335,106 +332,34 @@ class Pass(object):
         """
         Creates the hashes for all the files included in the pass file.
         """
-        self._hashes['pass.json'] = hashlib.sha256(pass_json.encode('utf-8')).hexdigest()
+        self._hashes['pass.json'] = hashlib.sha1(pass_json.encode('utf-8')).hexdigest()
         for filename, filedata in self._files.items():
-            self._hashes[filename] = hashlib.sha256(filedata).hexdigest()
+            self._hashes[filename] = hashlib.sha1(filedata).hexdigest()
         return json.dumps(self._hashes)
 
-    # def _get_smime(self, certificate, key, wwdr_certificate, password):
-    #     """
-    #     :return: M2Crypto.SMIME.SMIME
-    #     """
-    #     def passwordCallback(*args, **kwds):
-    #         return bytes(password, encoding='ascii')
-
-    #     smime = SMIME.SMIME()
-
-    #     wwdrcert = X509.load_cert(wwdr_certificate)
-    #     stack = X509_Stack()
-    #     stack.push(wwdrcert)
-    #     smime.set_x509_stack(stack)
-
-    #     smime.load_key(key, certfile=certificate, callback=passwordCallback)
-    #     return smime
-
-    # def _sign_manifest(self, manifest, certificate, key, wwdr_certificate, password):
-    #     """
-    #     :return: M2Crypto.SMIME.PKCS7
-    #     """
-    #     smime = self._get_smime(certificate, key, wwdr_certificate, password)
-    #     pkcs7 = smime.sign(
-    #         SMIME.BIO.MemoryBuffer(bytes(manifest, encoding='utf8')),
-    #         flags=SMIME.PKCS7_DETACHED | SMIME.PKCS7_BINARY
-    #     )
-    #     return pkcs7
-
-    # def _createSignature(self, manifest, certificate, key,
-    #                      wwdr_certificate, password):
-    #     """
-    #     Creates a signature (DER encoded) of the manifest. The manifest is the file
-    #     containing a list of files included in the pass file (and their hashes).
-    #     """
-    #     pk7 = self._sign_manifest(manifest, certificate, key, wwdr_certificate, password)
-    #     der = SMIME.BIO.MemoryBuffer()
-    #     pk7.write_der(der)
-    #     return der.read()
-    
-    def _readFileBytes(self, path):
+    def _createSignatureCrypto(self, manifest, certificate, key, wwdr_certificate, password):
         """
-        Utility function to read files as byte data
-        :param path: file path
-        :returns bytes
+        Creates a signature (DER encoded) of the manifest using cryptography library.
         """
-        with open(path, 'rb') as file:
-            return file.read()
-
-    def _createSignatureCrypto(self, manifest, certificate, key,
-                         wwdr_certificate, password):
-        """
-        Creates a signature (DER encoded) of the manifest.
-        Rewritten to use cryptography library instead of M2Crypto 
-        The manifest is the file
-        containing a list of files included in the pass file (and their hashes).
-        """
-        try:
-            # Read certificate files in binary mode
-            cert_data = self._readFileBytes(certificate)
-            key_data = self._readFileBytes(key)
-            wwdr_data = self._readFileBytes(wwdr_certificate)
-            
-            # Load the certificates and private key with proper error handling
-            try:
-                cert = x509.load_pem_x509_certificate(cert_data)
-            except Exception as e:
-                raise ValueError(f"Failed to load certificate: {str(e)}. Make sure it's a valid PEM-formatted certificate.")
-            
-            try:
-                priv_key = serialization.load_pem_private_key(
-                    key_data, 
-                    password=password.encode('UTF-8') if password else None
-                )
-            except Exception as e:
-                raise ValueError(f"Failed to load private key: {str(e)}. Check that the password is correct and the key is in PEM format.")
-            
-            try:
-                wwdr_cert = x509.load_pem_x509_certificate(wwdr_data)
-            except Exception as e:
-                raise ValueError(f"Failed to load WWDR certificate: {str(e)}. Make sure it's a valid PEM-formatted certificate.")
-            
-            # Create and return the signature
-            options = [pkcs7.PKCS7Options.DetachedSignature]
-            return pkcs7.PKCS7SignatureBuilder()\
-                    .set_data(manifest.encode('UTF-8'))\
-                    .add_signer(cert, priv_key, hashes.SHA256())\
-                    .add_certificate(wwdr_cert)\
-                    .sign(serialization.Encoding.DER, options)
-        except Exception as e:
-            # Provide more detailed error information
-            error_msg = f"Error creating signature: {str(e)}"
-            if "MalformedFraming" in str(e):
-                error_msg += "\nOne of your PEM files appears to be malformed. Make sure all certificates and keys are in proper PEM format."
-                error_msg += "\nSee https://cryptography.io/en/latest/faq/#why-can-t-i-import-my-pem-file for more details."
-            raise Exception(error_msg)
+        # Load the certificates and private key
+        cert_data = self._readFileBytes(certificate)
+        key_data = self._readFileBytes(key)
+        wwdr_data = self._readFileBytes(wwdr_certificate)
+        
+        cert = x509.load_pem_x509_certificate(cert_data)
+        private_key = load_pem_private_key(key_data, password=password.encode('utf-8') if password else None)
+        wwdr_cert = x509.load_pem_x509_certificate(wwdr_data)
+        
+        # Create and sign the PKCS7 signature
+        signature = (
+            pkcs7.PKCS7SignatureBuilder()
+            .set_data(manifest.encode('UTF-8'))
+            .add_signer(cert, private_key, hashes.SHA256())
+            .add_certificate(wwdr_cert)
+            .sign(serialization.Encoding.DER, [pkcs7.PKCS7Options.DetachedSignature])
+        )
+        
+        return signature
 
     # Creates .pkpass (zip archive)
     def _createZip(self, pass_json, manifest, signature, zip_file=None):
@@ -467,6 +392,15 @@ class Pass(object):
             d.update({'barcodes': newBarcodes})
             d.update({'barcode': legacyBarcode})
 
+        # NFC support
+        if self.nfc_message:
+            nfc_dict = {'message': self.nfc_message}
+            if self.encryption_public_key:
+                nfc_dict['encryptionPublicKey'] = self.encryption_public_key
+            if self.requiresAuthentication is not None:
+                nfc_dict['requiresAuthentication'] = self.requiresAuthentication
+            d.update({'nfc': nfc_dict})
+
         if self.relevantDate:
             d.update({'relevantDate': self.relevantDate})
         if self.backgroundColor:
@@ -478,7 +412,7 @@ class Pass(object):
         if self.logoText:
             d.update({'logoText': self.logoText})
         if self.locations:
-            d['locations'] = self.locations
+            d.update({'locations': self.locations})
         if self.ibeacons:
             d.update({'beacons': self.ibeacons})
         if self.userInfo:
@@ -496,15 +430,8 @@ class Pass(object):
         if self.webServiceURL:
             d.update({'webServiceURL': self.webServiceURL,
                       'authenticationToken': self.authenticationToken})
-        if self.nfc_message:
-            d['nfc'] = {
-                'message': self.nfc_message,
-                "encryptionPublicKey": self.encryption_public_key,
-                "requiresAuthentication": self.requiresAuthentication
-            }
         if self.sharingProhibited:
-            d.update({"sharingProhibited": self.sharingProhibited})
-
+            d.update({'sharingProhibited': True})
         return d
 
 
