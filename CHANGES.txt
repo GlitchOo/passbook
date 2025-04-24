@@ -1,3 +1,5 @@
 v1.0.0 - Forked from original passbook repo, updated package versions, added additional tests
 
 v1.0.1 - Added additional error messages, resolved issue with sha1, added additional readme info for latest openssl versions
+
+v1.0.2 - Refactor some of the logic in models (reduce code, also change some logic for building the manifest to sha1), refactor some tests
